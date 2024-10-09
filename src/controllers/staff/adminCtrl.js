@@ -91,6 +91,16 @@ const viewAdminProfile = async (req, res) => {
   }
 };
 
+// Get all admins
+const getAllAdmins = async (req, res) => {
+  try {
+    const admins = await Admin.find();
+    res.status(200).json(admins);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching all admins', error });
+  }
+};
+
 // Update a specific admin's details by id
 const updateAdmin = async (req, res) => {
   try {
@@ -155,166 +165,8 @@ module.exports = {
   loginAdmin,
   viewOneAdmin,
   viewAdminProfile,
+  getAllAdmins,  // Added function
   updateAdmin,
   updateProfile,
   deleteAdmin,
 };
-
-
-
-
-
-
-
-
-// const Admin = require('../../models/staff/Admin');
-// const bcrypt = require('bcryptjs');
-// const jwt = require('jsonwebtoken');
-
-// // Register a new admin
-// const registerAdmin = async (req, res) => {
-//   const { email, username, password, name, contact, nic } = req.body;
-
-//   try {
-//     // Check if admin already exists
-//     const existingAdmin = await Admin.findOne({ email });
-//     if (existingAdmin) {
-//       return res.status(400).json({ message: "Admin already exists" });
-//     }
-
-//     // Hash the password
-//     const hashedPassword = await bcrypt.hash(password, 12);
-
-//     // Create new admin
-//     const newAdmin = new Admin({
-//       email,
-//       username,
-//       password: hashedPassword,
-//       name,
-//       contact,
-//       nic,
-//     });
-
-//     await newAdmin.save();
-
-//     res.status(201).json({ message: "Admin registered successfully", data: newAdmin });
-//   } catch (error) {
-//     res.status(500).json({ message: "Failed to register admin", error });
-//   }
-// };
-
-// // Admin login
-// const loginAdmin = async (req, res) => {
-//   const { email, password } = req.body;
-
-//   try {
-//     const admin = await Admin.findOne({ email });
-//     if (!admin) {
-//       return res.status(400).json({ message: "Admin not found" });
-//     }
-
-//     // Check if password matches
-//     const isPasswordValid = await bcrypt.compare(password, admin.password);
-//     if (!isPasswordValid) {
-//       return res.status(400).json({ message: "Invalid credentials" });
-//     }
-
-//     // Generate JWT token
-//     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-//     res.status(200).json({ token, adminId: admin._id });
-//   } catch (error) {
-//     res.status(500).json({ message: "Failed to login", error });
-//   }
-// };
-
-// // View admin by ID (passed via params)
-// const viewOneAdmin = async (req, res) => {
-//   try {
-//     const admin = await Admin.findById(req.params.id);
-//     if (!admin) {
-//       return res.status(404).json({ message: "Admin not found" });
-//     }
-//     res.status(200).json(admin);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error fetching admin", error });
-//   }
-// };
-
-// // View logged-in admin profile
-// const viewAdminProfile = async (req, res) => {
-//   try {
-//     const admin = await Admin.findById(req.user._id);
-//     if (!admin) {
-//       return res.status(404).json({ message: "Admin not found" });
-//     }
-//     res.status(200).json(admin);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error fetching admin profile", error });
-//   }
-// };
-
-// // Delete an admin by ID
-// const deleteAdmin = async (req, res) => {
-//   try {
-//     const admin = await Admin.findByIdAndDelete(req.params.id);
-//     if (!admin) {
-//       return res.status(404).json({ message: "Admin not found" });
-//     }
-//     res.status(200).json({ message: "Admin deleted successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error deleting admin", error });
-//   }
-// };
-
-// // Update an admin by ID (passed via params)
-// const updateAdmin = async (req, res) => {
-//   const { name, contact, nic } = req.body;
-
-//   try {
-//     const admin = await Admin.findByIdAndUpdate(
-//       req.params.id,
-//       { name, contact, nic },
-//       { new: true }
-//     );
-
-//     if (!admin) {
-//       return res.status(404).json({ message: "Admin not found" });
-//     }
-
-//     res.status(200).json({ message: "Admin updated successfully", data: admin });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error updating admin", error });
-//   }
-// };
-
-// // Update the logged-in admin's profile
-// const updateProfile = async (req, res) => {
-//   const { name, contact, nic } = req.body;
-
-//   try {
-//     const admin = await Admin.findByIdAndUpdate(
-//       req.user._id,
-//       { name, contact, nic },
-//       { new: true }
-//     );
-
-//     if (!admin) {
-//       return res.status(404).json({ message: "Admin not found" });
-//     }
-
-//     res.status(200).json({ message: "Profile updated successfully", data: admin });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error updating profile", error });
-//   }
-// };
-
-// module.exports = {
-//   registerAdmin,
-//   loginAdmin,
-//   viewOneAdmin,
-//   viewAdminProfile,
-//   deleteAdmin,
-//   updateAdmin,
-//   updateProfile,
-// };

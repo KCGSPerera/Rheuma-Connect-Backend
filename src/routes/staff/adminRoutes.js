@@ -6,6 +6,7 @@ const {
   loginAdmin,
   viewOneAdmin,
   viewAdminProfile,
+  getAllAdmins, // Add this route
   updateAdmin,
   updateProfile,
   deleteAdmin,
@@ -16,6 +17,9 @@ router.post('/register', registerAdmin);
 
 // Admin login
 router.post('/login', loginAdmin);
+
+// Get all admins (protected route, role-based access)
+router.get('/all', authMiddleware, roleMiddleware(['admin']), getAllAdmins);
 
 // View specific admin details by id (protected route, role-based access)
 router.get('/:id', authMiddleware, roleMiddleware(['admin']), viewOneAdmin);
@@ -33,6 +37,7 @@ router.put('/profile/me', authMiddleware, roleMiddleware(['admin']), updateProfi
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), deleteAdmin);
 
 module.exports = router;
+
 
 
 
