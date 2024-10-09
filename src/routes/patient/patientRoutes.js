@@ -17,4 +17,6 @@ router.put('/:id/update', authMiddleware, roleMiddleware(['Patient']), upload.si
 // View patient details
 router.get('/:id', authMiddleware,viewPatient);  // , roleMiddleware(['Patient'])
 
+
+
 module.exports = router;

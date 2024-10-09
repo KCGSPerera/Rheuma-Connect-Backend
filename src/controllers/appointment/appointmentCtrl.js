@@ -232,6 +232,30 @@ const getAllScheduledAndRescheduledForToday = async (req, res) => {
   }
 };
 
+// Get the last appointment for a patient
+const getPatientLastAppointment = async (req, res) => {
+    try {
+      const { patientId } = req.params;
+  
+      // Find the patient by ID and populate the appointments array
+      const patient = await Patient.findById(patientId).populate({
+        path: 'appointments',
+        options: { sort: { _id: -1 }, limit: 1 } // Get the last appointment
+      });
+  
+      if (!patient || patient.appointments.length === 0) {
+        return res.status(404).json({ message: "No appointment found for this patient." });
+      }
+  
+      const lastAppointment = patient.appointments[0]; // Retrieve the last appointment
+  
+      res.status(200).json({ appointment: lastAppointment });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching the last appointment", error });
+    }
+  };
+  
+
 module.exports = {
   addAppointment,
   updateAppointmentStatus,
@@ -247,4 +271,5 @@ module.exports = {
   getScheduledAppointmentsForToday,
   getRescheduledAppointmentsForToday,
   getAllScheduledAndRescheduledForToday,
+  getPatientLastAppointment,
 };

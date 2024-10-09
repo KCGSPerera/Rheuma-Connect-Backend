@@ -6,16 +6,16 @@ const patientSchema = new Schema({
   username: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   profilePhoto: String,
   name: String,
@@ -38,41 +38,40 @@ const patientSchema = new Schema({
   },
   registered: {
     type: Boolean,
-    default: true // Admin will accept the patient
+    default: true, // Admin will accept the patient
   },
-  role: { 
-    type: String, 
-    default: 'Patient' 
+  role: {
+    type: String,
+    default: 'Patient',
   },
   patientVitals: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "PatientVitals",
+      ref: 'PatientVitals',
     },
   ],
   appointments: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Appointment",
+      ref: 'Appointment',
     },
   ],
   medicalRecords: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "MedicalRecord",
+      ref: 'MedicalRecord',
     },
   ],
   doctors: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
+      ref: 'Doctor',
     },
   ],
-
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 // Hashing the password before saving
@@ -80,6 +79,15 @@ patientSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+// Formatting birthday to remove time information before saving
+patientSchema.pre('save', function (next) {
+  if (this.birthday) {
+    // Set the time to 00:00:00 for the birthday
+    this.birthday = new Date(this.birthday.setUTCHours(0, 0, 0, 0));
+  }
   next();
 });
 

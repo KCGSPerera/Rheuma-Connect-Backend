@@ -209,7 +209,22 @@ const updatePatientInfo = async (req, res) => {
 
   
 
-// Function to view patient details
+// // Function to view patient details
+// const viewPatient = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const patient = await Patient.findById(id);
+//     if (!patient) {
+//       return res.status(404).json({ message: 'Patient not found' });
+//     }
+//     res.status(200).json({ patient });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error fetching patient details', error });
+//   }
+// };
+
+// view single patient with formatted birthday
+// view single patient with formatted birthday and createdAt
 const viewPatient = async (req, res) => {
   try {
     const { id } = req.params;
@@ -217,11 +232,20 @@ const viewPatient = async (req, res) => {
     if (!patient) {
       return res.status(404).json({ message: 'Patient not found' });
     }
-    res.status(200).json({ patient });
+
+    // Format the birthday and createdAt to remove the time part (YYYY-MM-DD)
+    const formattedPatient = {
+      ...patient._doc, // Spread the patient document
+      birthday: patient.birthday ? patient.birthday.toISOString().split('T')[0] : null, // Format birthday
+      createdAt: patient.createdAt ? patient.createdAt.toISOString().split('T')[0] : null, // Format createdAt
+    };
+
+    res.status(200).json({ patient: formattedPatient });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching patient details', error });
   }
 };
+
 
 
 

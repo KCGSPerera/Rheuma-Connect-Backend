@@ -16,6 +16,7 @@ const {
   getScheduledAppointmentsForToday,
   getRescheduledAppointmentsForToday,
   getAllScheduledAndRescheduledForToday,
+  getPatientLastAppointment,
 } = require("../../controllers/appointment/appointmentCtrl");
 
 // Add new appointment (Doctor creates an appointment for a patient)
@@ -59,5 +60,9 @@ router.get("/rescheduled/today", authMiddleware, getRescheduledAppointmentsForTo
 
 // Get all Scheduled and Rescheduled appointments for the current day
 router.get("/today", authMiddleware, getAllScheduledAndRescheduledForToday);
+
+// Get the patient's last appointment
+router.get("/patient/:patientId/last-appointment", authMiddleware, getPatientLastAppointment);
+
 
 module.exports = router;
