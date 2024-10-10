@@ -125,12 +125,113 @@ const viewAllMedicalRecords = async (req, res) => {
   }
 };
 
+//======================================
+//====== HANSANIE ======================
+//======================================
+
+// Add a new medical record
+const addRecord = async (req, res) => {
+  const { description, duration, medicines, date, generatedBy, patient } = req.body;
+
+  const newRecord = new MedicalRecord({
+    description,
+    duration,
+    medicines,
+    date,
+    generatedBy,
+    patient,
+  });
+
+  try {
+    const savedRecord = await newRecord.save();
+
+    // const doctor = await Doctor.findById(generatedBy);
+    //   if (doctor) {
+    //     doctor.medicalRecords.push(savedRecord._id);
+    //     await doctor.save();
+    //   }
+
+    //   const patient = await Patient.findById(patient);
+    //   if (patient) {
+    //     patient.medicalRecords.push(savedRecord._id);
+    //     await patient.save();
+    //   }
+    res.status(201).json(savedRecord);
+  } catch (error) {
+    res.status(400).json({ message: 'Error adding record', error });
+  }
+};
+
+// Fetch all medical records
+const getAllRecords_old = async (req, res) => {
+  try {
+    const records = await MedicalRecord.find()
+      .populate('generatedBy', 'name'); // Populate doctor name (optional)
+      // .populate('patient', 'name'); // Populate patient name (optional)
+      
+    res.status(200).json(records);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving records', error });
+  }
+};
+
+const getAllRecords2 = async (req, res) => {
+  try {
+    const { patientId } = req.params; // Get patientId from URL parameters
+
+    const records = await MedicalRecord.find({ patient: patientId }) // Fetch records for the specified patient
+      .populate('generatedBy', 'name') // Populate doctor name (optional)
+      // .populate('patient', 'name'); // Populate patient name (optional)
+
+    res.status(200).json(records);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving records', error });
+  }
+};
+
+const getAllRecords = async (req, res) => {
+  const { patientId } = req.params; // Extract patientId from the request parameters
+
+  try {
+    const records = await MedicalRecord.find({ patient: patientId }) // Filter by patient ID
+      .populate('generatedBy', 'name'); // Optional: Populate doctor name
+      
+    res.status(200).json(records);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving records', error });
+  }
+};
+
+// Fetch a medical record by ID
+const getRecordById = async (req, res) => {
+  const { id } = req.params; // Get the ID from the request parameters
+
+  try {
+    const record = await MedicalRecord.findById(id)
+      .populate('generatedBy', 'name'); // Populate doctor name (optional)
+      // .populate('patient', 'name'); // Populate patient name (optional)
+
+    if (!record) {
+      return res.status(404).json({ message: 'Record not found' });
+    }
+    
+    res.status(200).json(record);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving record', error });
+  }
+};
+
+
 module.exports = {
   addMedicalRecord,
   updateMedicalRecord,
   viewMedicalRecord,
   viewAllMedicalRecordsOfPatient,
   viewAllMedicalRecords,
+  //Hansanie
+  addRecord,
+  getAllRecords,
+  getRecordById,
 };
 
 

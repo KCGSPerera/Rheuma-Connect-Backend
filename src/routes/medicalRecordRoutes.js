@@ -7,7 +7,35 @@ const {
   viewMedicalRecord,
   viewAllMedicalRecordsOfPatient,
   viewAllMedicalRecords,
+
+  
+  //Hansanie
+  addRecord,
+  getAllRecords,
+  getRecordById,
 } = require("../controllers/medicalRecordController");
+
+
+//========= Hansanie =====================================
+
+// router.post("/add-record", authMiddleware, roleMiddleware(['Doctor', 'Intern']), addRecord);
+// router.post("/get-all-records", authMiddleware, roleMiddleware(['Doctor', 'Intern']), getAllRecords);
+// router.post("/get-record", authMiddleware, roleMiddleware(['Doctor', 'Intern']), getRecordById);
+
+
+router.post("/add-record", authMiddleware,  addRecord);
+router.get("/get-all-records/:patientId", authMiddleware,  getAllRecords);
+router.get("/get-record/:id", authMiddleware,  getRecordById);
+
+//==============================================
+
+
+
+
+
+
+
+
 
 // Route to add medical record (requires doctor or intern role)
 router.post("/add", authMiddleware, roleMiddleware(['Doctor', 'Intern']), addMedicalRecord);

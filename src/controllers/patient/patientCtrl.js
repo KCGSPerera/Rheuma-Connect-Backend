@@ -266,6 +266,33 @@ const getAllPatients = async (req, res) => {
   }
 };
 
+//Get one patient with medicalId
+const getPatientByMedicalId = async (req, res) => {
+  try {
+    // Extract medicalId from request parameters
+    const { medicalId } = req.params;
+
+    // Fetch the patient with the specified medicalId from the database
+    const patient = await Patient.findOne({ medicalId });
+
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    // Format the birthday and createdAt
+    const formattedPatient = {
+      ...patient._doc, // Spread the patient document
+      birthday: patient.birthday ? patient.birthday.toISOString().split('T')[0] : null, // Format birthday
+      createdAt: patient.createdAt ? patient.createdAt.toISOString().split('T')[0] : null, // Format createdAt
+    };
+
+    // Respond with the formatted patient data
+    res.status(200).json({ patient: formattedPatient });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching patient', error });
+  }
+};
+
 
 module.exports = {
   registerPatient,
@@ -273,5 +300,6 @@ module.exports = {
   updatePatientInfo,
   viewPatient,
   getAllPatients,
+  getPatientByMedicalId
 };
 
