@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { authMiddleware, roleMiddleware } = require('../../middleware/authMiddleware');
 const { upload } = require('../../utils/upload'); // Multer upload configuration
-const { registerPatient, updatePatientInfo, viewPatient, loginPatient } = require('../../controllers/patient/patientCtrl');
+const { registerPatient, updatePatientInfo, viewPatient, loginPatient,getAllPatients } = require('../../controllers/patient/patientCtrl');
 
 // Patient registration
 router.post('/register', registerPatient);
 
 // Patient login
 router.post('/login', loginPatient);
+router.get('/all', getAllPatients);
 
 // Patient info update
 // router.put('/:id/update', authMiddleware, roleMiddleware(['Patient']),updatePatientInfo);  // Route for without photo upload

@@ -247,7 +247,24 @@ const viewPatient = async (req, res) => {
 };
 
 
+// Function to get all patients
+const getAllPatients = async (req, res) => {
+  try {
+    // Fetch all patients from the database
+    const patients = await Patient.find();
 
+    // Format the birthday and createdAt for each patient
+    const formattedPatients = patients.map((patient) => ({
+      ...patient._doc, // Spread the patient document
+      birthday: patient.birthday ? patient.birthday.toISOString().split('T')[0] : null, // Format birthday
+      createdAt: patient.createdAt ? patient.createdAt.toISOString().split('T')[0] : null, // Format createdAt
+    }));
+
+    res.status(200).json({ patients: formattedPatients });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching patients', error });
+  }
+};
 
 
 module.exports = {
@@ -255,5 +272,6 @@ module.exports = {
   loginPatient,
   updatePatientInfo,
   viewPatient,
+  getAllPatients,
 };
 
