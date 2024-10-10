@@ -16,16 +16,30 @@ router.post('/register', registerIntern);
 // Intern login
 router.post('/login', loginIntern);
 
+// // View intern profile by ID (protected route)
+// router.get('/:id', authMiddleware, roleMiddleware(['intern', 'admin']), viewInternProfile);
+
+// // View all interns (protected route)
+// router.get('/', authMiddleware,  viewAllInterns);  // roleMiddleware(['admin']),
+
+// // Update intern profile by ID (protected route)
+// router.put('/:id', authMiddleware, roleMiddleware(['intern', 'admin']), updateInternProfile);
+
+// // Delete intern by ID (protected route)
+// router.delete('/:id', authMiddleware, roleMiddleware(['admin']), deleteIntern);
+
 // View intern profile by ID (protected route)
-router.get('/:id', authMiddleware, roleMiddleware(['intern', 'admin']), viewInternProfile);
+router.get('/:id', viewInternProfile);
 
 // View all interns (protected route)
-router.get('/', authMiddleware, roleMiddleware(['admin']), viewAllInterns);
+router.get('/', viewAllInterns);  // roleMiddleware(['admin']),
 
 // Update intern profile by ID (protected route)
-router.put('/:id', authMiddleware, roleMiddleware(['intern', 'admin']), updateInternProfile);
+router.put('/:id', updateInternProfile);
 
 // Delete intern by ID (protected route)
-router.delete('/:id', authMiddleware, roleMiddleware(['admin']), deleteIntern);
+router.delete('/:id', deleteIntern);
+
+
 
 module.exports = router;
