@@ -5,10 +5,10 @@ const {
   registerAdmin,
   loginAdmin,
   viewOneAdmin,
-  viewAdminProfile,
+  // viewAdminProfile,
   getAllAdmins, // Add this route
   updateAdmin,
-  updateProfile,
+  // updateProfile,
   deleteAdmin,
 } = require('../../controllers/staff/adminCtrl');
 
@@ -24,14 +24,14 @@ router.get('/all', authMiddleware, roleMiddleware(['admin']), getAllAdmins);
 // View specific admin details by id (protected route, role-based access)
 router.get('/:id', authMiddleware, roleMiddleware(['admin']), viewOneAdmin);
 
-// View logged-in admin's profile (protected route)
-router.get('/profile/me', authMiddleware, roleMiddleware(['admin']), viewAdminProfile);
+// // View logged-in admin's profile (protected route)
+// router.get('/profile/me', authMiddleware, roleMiddleware(['admin']), viewAdminProfile);
 
 // Update specific admin's details by id (protected route, role-based access)
 router.put('/:id', authMiddleware, roleMiddleware(['admin']), updateAdmin);
 
-// Update logged-in admin's profile (protected route)
-router.put('/profile/me', authMiddleware, roleMiddleware(['admin']), updateProfile);
+// // Update logged-in admin's profile (protected route)
+// router.put('/profile/me', authMiddleware, roleMiddleware(['admin']), updateProfile);
 
 // Delete admin by id (protected route, role-based access)
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), deleteAdmin);

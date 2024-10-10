@@ -78,18 +78,18 @@ const viewOneAdmin = async (req, res) => {
   }
 };
 
-// View logged-in admin's profile
-const viewAdminProfile = async (req, res) => {
-  try {
-    const admin = await Admin.findById(req.user._id);
-    if (!admin) {
-      return res.status(404).json({ message: 'Admin not found' });
-    }
-    res.status(200).json({ admin });
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching admin profile', error });
-  }
-};
+// // View logged-in admin's profile
+// const viewAdminProfile = async (req, res) => {
+//   try {
+//     const admin = await Admin.findById(req.user._id);
+//     if (!admin) {
+//       return res.status(404).json({ message: 'Admin not found' });
+//     }
+//     res.status(200).json({ admin });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error fetching admin profile', error });
+//   }
+// };
 
 // Get all admins
 const getAllAdmins = async (req, res) => {
@@ -123,26 +123,26 @@ const updateAdmin = async (req, res) => {
   }
 };
 
-// Update logged-in admin's profile
-const updateProfile = async (req, res) => {
-  try {
-    const { username, email, name, contact, nic } = req.body;
+// // Update logged-in admin's profile
+// const updateProfile = async (req, res) => {
+//   try {
+//     const { username, email, name, contact, nic } = req.body;
 
-    const updatedAdmin = await Admin.findByIdAndUpdate(
-      req.user._id,
-      { username, email, name, contact, nic },
-      { new: true }
-    );
+//     const updatedAdmin = await Admin.findByIdAndUpdate(
+//       req.user._id,
+//       { username, email, name, contact, nic },
+//       { new: true }
+//     );
 
-    if (!updatedAdmin) {
-      return res.status(404).json({ message: 'Admin not found' });
-    }
+//     if (!updatedAdmin) {
+//       return res.status(404).json({ message: 'Admin not found' });
+//     }
 
-    res.status(200).json({ message: 'Profile updated', updatedAdmin });
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating profile', error });
-  }
-};
+//     res.status(200).json({ message: 'Profile updated', updatedAdmin });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error updating profile', error });
+//   }
+// };
 
 // Delete an admin by id
 const deleteAdmin = async (req, res) => {
@@ -164,9 +164,9 @@ module.exports = {
   registerAdmin,
   loginAdmin,
   viewOneAdmin,
-  viewAdminProfile,
+  // viewAdminProfile,
   getAllAdmins,  // Added function
   updateAdmin,
-  updateProfile,
+  // updateProfile,
   deleteAdmin,
 };
