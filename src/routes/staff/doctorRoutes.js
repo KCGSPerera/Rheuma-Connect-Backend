@@ -19,8 +19,12 @@ router.post('/login', loginDoctor);
 // View doctor profile by ID (protected route)
 router.get('/:id', authMiddleware, roleMiddleware(['doctor', 'admin']), viewDoctorProfile);
 
+// // View all doctors (protected route)
+// router.get('/', authMiddleware, roleMiddleware(['admin']), viewAllDoctors);
+
 // View all doctors (protected route)
-router.get('/', authMiddleware, roleMiddleware(['admin']), viewAllDoctors);
+router.get('/', viewAllDoctors);
+
 
 // Update doctor profile by ID (protected route)
 router.put('/:id', authMiddleware, roleMiddleware(['doctor', 'admin']), updateDoctorProfile);
