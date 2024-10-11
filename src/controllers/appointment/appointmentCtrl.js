@@ -465,19 +465,53 @@ const getAppointmentsForTodayWithScheduledStatus = async (req, res) => {
   }
 };
 
+// const getPatientsForTodayAppointmentWithScheduledStatus = async (req, res) => {
+//   try {
+//     const today = new Date().setHours(0, 0, 0, 0); // Set the time to midnight for today's date
+
+//     const scheduledAppointments = await Appointment.find({
+//       date: { $eq: today }, // Find appointments where the date is today
+//       status: 'Scheduled',  // Status is Scheduled
+//     })
+//     .populate({
+//       path: 'patientId', // Populate patientId field to retrieve patient details
+//       select: 'name medicalId', // Only select the patient's name and medicalId
+//     })
+//     .populate('consultant patientVitals medicalRecords'); // Populate other fields as necessary
+
+//     if (!scheduledAppointments.length) {
+//       return res.status(404).json({ message: "No scheduled appointments found for today." });
+//     }
+
+//     // Extract patient details from the scheduled appointments
+//     const patientsWithScheduledAppointments = scheduledAppointments.map(app => app.patientId);
+
+//     res.status(200).json({ patients: patientsWithScheduledAppointments });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching today's scheduled patients", error });
+//   }
+// };
+
+// Get appointments by patient ID where status is "Scheduled"
+
 const getPatientsForTodayAppointmentWithScheduledStatus = async (req, res) => {
   try {
-    const today = new Date().setHours(0, 0, 0, 0); // Set the time to midnight for today's date
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0); // Start of today (midnight)
 
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999); // End of today (just before midnight tomorrow)
+
+    // Find appointments where the date is within today's range and the status is 'Scheduled'
     const scheduledAppointments = await Appointment.find({
-      date: { $eq: today }, // Find appointments where the date is today
-      status: 'Scheduled',  // Status is Scheduled
+      date: { $gte: startOfDay, $lt: endOfDay }, // Match appointments within today's range
+      status: 'Scheduled',  // Status is 'Scheduled'
     })
-    .populate({
-      path: 'patientId', // Populate patientId field to retrieve patient details
-      select: 'name medicalId', // Only select the patient's name and medicalId
-    })
-    .populate('consultant patientVitals medicalRecords'); // Populate other fields as necessary
+      .populate({
+        path: 'patientId', // Populate patientId field to retrieve patient details
+        select: 'name medicalId', // Only select the patient's name and medicalId
+      })
+      .populate('consultant patientVitals medicalRecords'); // Populate other fields as necessary
 
     if (!scheduledAppointments.length) {
       return res.status(404).json({ message: "No scheduled appointments found for today." });
@@ -492,7 +526,8 @@ const getPatientsForTodayAppointmentWithScheduledStatus = async (req, res) => {
   }
 };
 
-// Get appointments by patient ID where status is "Scheduled"
+
+
 const getScheduledAppointmentsByPatientId = async (req, res) => {
   const { patientId } = req.params;
   

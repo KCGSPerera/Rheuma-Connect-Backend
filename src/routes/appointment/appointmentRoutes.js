@@ -85,7 +85,7 @@ router.post("/add", authMiddleware,  addAppointmentAndCompleteLastAppointment);
 router.get("/get-last/:patientId", authMiddleware, getLastAppointmentByPatientId);
 router.get("/get-last-scheduled/:patientId", authMiddleware, getLastScheduledAppointmentByPatientId);
 router.get("/get-all-today", authMiddleware, getAppointmentsForTodayWithScheduledStatus);
-router.get("/get-all-today/patients", authMiddleware, getPatientsForTodayAppointmentWithScheduledStatus);
+router.get("/get-all-today/patients",  getPatientsForTodayAppointmentWithScheduledStatus);
 
 
 module.exports = router;
