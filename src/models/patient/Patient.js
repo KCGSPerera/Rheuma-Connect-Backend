@@ -28,13 +28,15 @@ const patientSchema = new Schema({
   },
   bloodType: {
     type: String,
-    enum: ['A', 'B', 'AB', 'O'],
+    enum: ['A+', 'B+', 'AB+', 'O+','A-', 'B-', 'AB-', 'O-'],
+    default: '',
   },
   contactNumber: String,
   allergies: Boolean,
   rheumaticType: {
     type: String,
-    enum: ['Type-1', 'Type-2', 'Type-3'],
+    enum: ['Type-1', 'Type-2', 'Type-3','Type 1', 'Type 2', 'Type 3'],
+    default: '',
   },
   registered: {
     type: Boolean,
