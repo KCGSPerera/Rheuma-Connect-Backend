@@ -514,6 +514,28 @@ const getScheduledAppointmentsByPatientId = async (req, res) => {
   }
 };
 
+// Get appointments by patient ID where status is "Scheduled"
+const getAllAppointmentsByPatientId = async (req, res) => {
+  const { patientId } = req.params;
+  
+  try {
+    const appointments = await Appointment.find({
+      patientId: patientId,
+    }).populate('consultant', 'name') // Populate consultant's name
+      .populate('patientVitals') // Optionally populate patientVitals
+      .populate('medicalRecords'); // Optionally populate medicalRecords
+
+    if (!appointments) {
+      return res.status(404).json({ message: 'No appointments found for this patient.' });
+    }
+
+    res.status(200).json(appointments);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving appointments', error: error.message });
+  }
+};
+
+
 module.exports = {
   addAppointment,
   updateAppointmentStatus,
@@ -536,4 +558,5 @@ module.exports = {
   getAppointmentsForTodayWithScheduledStatus,
   getPatientsForTodayAppointmentWithScheduledStatus,
   getScheduledAppointmentsByPatientId,
+  getAllAppointmentsByPatientId,
 };
