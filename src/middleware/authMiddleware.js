@@ -33,6 +33,7 @@ const jwt = require('jsonwebtoken');
 const Admin = require('../models/staff/Admin');
 const Doctor = require('../models/staff/Doctor');
 const Patient = require('../models/patient/Patient');
+const Intern = require('../models/staff/Intern');
 
 // Authenticate based on role
 const authMiddleware = async (req, res, next) => {
@@ -46,7 +47,7 @@ const authMiddleware = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Find the user based on the token's decoded ID (check Admin, Doctor, or Patient)
-    let user = await Admin.findById(decoded.id) || await Doctor.findById(decoded.id) || await Patient.findById(decoded.id);
+    let user = await Admin.findById(decoded.id) || await Doctor.findById(decoded.id) || await Patient.findById(decoded.id) || await Intern.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
