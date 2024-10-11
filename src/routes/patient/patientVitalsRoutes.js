@@ -6,10 +6,14 @@ const {
   getRecentPatientVitals,
   updatePatientVitals,
   deletePatientVitals,
+  getAllVitals,
 } = require("../../controllers/patient/patientVitalsCtrl");
 
 // Add patient vitals
 router.post("/addVitals", addPatientVitals);
+
+//get all
+router.get("/getAllVitals/:patientId", getAllVitals);
 
 // Get patient vitals by date
 router.get("/getVitalsByDate", getPatientVitalsByDate);
