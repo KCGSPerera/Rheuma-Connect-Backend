@@ -107,27 +107,178 @@ const deleteArticle = async (req, res) => {
   }
 };
 
-// Filter articles by name or category
-const filterArticles = async (req, res) => {
-  try {
-    const { searchQuery } = req.query;
+// // Filter articles by name or category
+// const filterArticles = async (req, res) => {
+//   try {
+//     const { searchQuery } = req.query;
 
-    const articles = await InfoHub.find({
-      $or: [
-        { name: { $regex: searchQuery, $options: "i" } }, // case-insensitive search by name
-        { category: { $regex: searchQuery, $options: "i" } }, // case-insensitive search by category
-      ],
+//     const articles = await InfoHub.find({
+//       $or: [
+//         { name: { $regex: searchQuery, $options: "i" } }, // case-insensitive search by name
+//         { category: { $regex: searchQuery, $options: "i" } }, // case-insensitive search by category
+//         {doc: { $regex: searchQuery, $options: "i" }},
+//       ],
+//     });
+
+//     if (articles.length === 0) {
+//       return res.status(404).json({ message: "No matching articles found" });
+//     }
+
+//     res.status(200).json({ articles });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error filtering articles", error });
+//   }
+// };
+
+
+// =========================================
+
+// FROM HERE, NEW CONTROLLERS ARE AVAILABLE
+
+// =========================================
+
+// ============================
+// Add a new Info Article
+// ============================
+const addInfoArticle = async (req, res) => {
+  const { name, doc, category, uploadedBy } = req.body;
+
+  try {
+    // Check if the doctor exists
+    const doctor = await Doctor.findById(uploadedBy);
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    const newInfoArticle = new InfoHub({
+      name,
+      doc,
+      category,
+      uploadedBy,
     });
 
-    if (articles.length === 0) {
-      return res.status(404).json({ message: "No matching articles found" });
+    await newInfoArticle.save();
+
+    res.status(201).json({
+      message: "Info article added successfully",
+      article: newInfoArticle,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to add info article",
+      error: error.message,
+    });
+  }
+};
+
+// ============================
+// Get all Info Articles
+// ============================
+const getAllInfoArticles = async (req, res) => {
+  try {
+    const articles = await InfoHub.find().populate("uploadedBy", "name");
+    res.status(200).json({ data: articles });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to retrieve articles",
+      error: error.message,
+    });
+  }
+};
+
+// ============================
+// Get Info Article by ID
+// ============================
+const getInfoArticleById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const article = await InfoHub.findById(id).populate("uploadedBy", "name");
+    if (!article) {
+      return res.status(404).json({ message: "Article not found" });
     }
+    res.status(200).json(article);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to retrieve the article",
+      error: error.message,
+    });
+  }
+};
+
+// ============================
+// Delete Info Article by ID
+// ============================
+const deleteInfoArticle = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const article = await InfoHub.findByIdAndDelete(id);
+    if (!article) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+
+    res.status(200).json({
+      message: "Info article deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to delete article",
+      error: error.message,
+    });
+  }
+};
+
+// ============================
+// Filter Info Articles by name, category, or doc
+// ============================
+// const filterInfoArticles = async (req, res) => {
+//   const { searchQuery } = req.query;
+
+//   try {
+//     // Use a regular expression for case-insensitive search across multiple fields
+//     const regex = new RegExp(searchQuery, "i");
+
+//     const articles = await InfoHub.find({
+//       $or: [
+//         { name: { $regex: regex } },
+//         { category: { $regex: regex } },
+//         { doc: { $regex: regex } },
+//       ],
+//     }).populate("uploadedBy", "name");
+
+//     if (articles.length === 0) {
+//       return res.status(404).json({ message: "No articles found" });
+//     }
+
+//     res.status(200).json({ data: articles });
+//   } catch (error) {
+//     res.status(500).json({
+//       message: "Failed to filter articles",
+//       error: error.message,
+//     });
+//   }
+// };
+
+const filterInfoArticles = async (req, res) => {
+  try {
+    const searchQuery = req.query.searchQuery;
+    
+    const articles = await InfoHub.find({
+      $or: [
+        { name: { $regex: searchQuery, $options: 'i' } }, // case-insensitive search
+        { category: { $regex: searchQuery, $options: 'i' } },
+        { doc: { $regex: searchQuery, $options: 'i' } }
+      ]
+    });
 
     res.status(200).json({ articles });
   } catch (error) {
-    res.status(500).json({ message: "Error filtering articles", error });
+    res.status(500).json({ message: 'Failed to retrieve the article', error: error.message });
   }
 };
+
+
 
 module.exports = {
   addArticle,
@@ -135,5 +286,11 @@ module.exports = {
   getOneArticle,
   updateArticle,
   deleteArticle,
-  filterArticles,
+  // filterArticles,
+  //from here new exports
+  addInfoArticle,
+  getAllInfoArticles,
+  getInfoArticleById,
+  deleteInfoArticle,
+  filterInfoArticles,
 };
