@@ -71,7 +71,7 @@ router.get("/patient/:patientId/last-appointment", authMiddleware, getPatientLas
 
 
 //Hansanie
-router.post("/add", authMiddleware, roleMiddleware(["doctor"]), addAppointmentAndCompleteLastAppointment);
+router.post("/add", authMiddleware,  addAppointmentAndCompleteLastAppointment);
 router.get("/get-last/:patientId", authMiddleware, getLastAppointmentByPatientId);
 router.get("/get-last-scheduled/:patientId", authMiddleware, getLastScheduledAppointmentByPatientId);
 router.get("/get-all-today", authMiddleware, getAppointmentsForTodayWithScheduledStatus);
