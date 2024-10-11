@@ -556,6 +556,7 @@ const getAllAppointmentsByPatientId = async (req, res) => {
   try {
     const appointments = await Appointment.find({
       patientId: patientId,
+      status: "Completed"
     }).populate('consultant', 'name') // Populate consultant's name
       .populate('patientVitals') // Optionally populate patientVitals
       .populate('medicalRecords'); // Optionally populate medicalRecords
