@@ -1,6 +1,7 @@
 const Appointment = require("../../models/appointment/Appointment");
 const Patient = require("../../models/patient/Patient");
 const Doctor = require("../../models/staff/Doctor");
+const moment = require('moment'); 
 
 // Add new appointment
 const addAppointment = async (req, res) => {
@@ -255,7 +256,7 @@ const getPatientLastAppointment = async (req, res) => {
     }
   };
 
-  const moment = require('moment'); // Import Moment.js
+ // Import Moment.js
 
   const addAppointmentAndCompleteLastAppointment = async (req, res) => {
     try {
