@@ -254,7 +254,244 @@ const getPatientLastAppointment = async (req, res) => {
       res.status(500).json({ message: "Error fetching the last appointment", error });
     }
   };
+
+  const moment = require('moment'); // Import Moment.js
+
+  const addAppointmentAndCompleteLastAppointment = async (req, res) => {
+    try {
+      const { patientId, consultant, date, time, roomNo } = req.body;
   
+      // Parse the incoming date using Moment.js
+      const appointmentDate = moment(date).add(1, 'hours'); // Adjust for timezone if needed
+  
+      // Find the last appointment for the given patientId with status "Scheduled"
+      const lastAppointment = await Appointment.findOne({
+        patientId: patientId,
+        status: "Scheduled", // We only want to complete the last "Scheduled" appointment
+      }).sort({ date: -1, time: -1 }); // Sort by the most recent date and time
+  
+      // If there's a last appointment, update its status to "Completed"
+      if (lastAppointment) {
+        lastAppointment.status = "Completed";
+        await lastAppointment.save(); // Save the changes
+      }
+  
+      // Create a new appointment with formatted date
+      const newAppointment = new Appointment({
+        patientId,
+        consultant: consultant,
+        date: appointmentDate.toDate(), // Convert Moment object back to JavaScript Date
+        time,
+        roomNo,
+        status: "Scheduled", // Set new appointment status to "Scheduled"
+      });
+  
+      const savedAppointment = await newAppointment.save();
+  
+      res.status(201).json({
+        message: "Appointment created successfully, previous appointment completed",
+        appointment: savedAppointment,
+        lastAppointment: lastAppointment ? lastAppointment : "No previous appointment found",
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error creating appointment", error });
+    }
+  };
+
+  
+// add new Appointment And Complete Last Appointment status as completed 
+// const addAppointmentAndCompleteLastAppointment = async (req, res) => {
+//   try {
+//     const { patientId, consultant, date, time, roomNo } = req.body;
+
+//     // Create a new appointment
+//     const newAppointment = new Appointment({
+//       patientId,
+//       consultant: consultant,
+//       date,
+//       time,
+//       roomNo,
+//       status: "Scheduled",
+//     });
+
+//     const savedAppointment = await newAppointment.save();
+
+
+//     res.status(201).json({
+//       message: "Appointment created successfully",
+//       appointment: savedAppointment,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error creating appointment", error });
+//   }
+// };
+
+// const addAppointmentAndCompleteLastAppointment = async (req, res) => {
+//   try {
+//     const { patientId, consultant, date, time, roomNo } = req.body;
+
+//     // Parse the incoming date and time, adjusting for your timezone if necessary
+//     const appointmentDate = new Date(date); // Assuming date is in the correct format (e.g., "2024-10-11")
+//     appointmentDate.setHours(appointmentDate.getHours() + 1); // Adjust for timezone if needed
+
+//     // Find the last appointment for the given patientId with status "Scheduled"
+//     const lastAppointment = await Appointment.findOne({
+//       patientId: patientId,
+//       status: "Scheduled", // We only want to complete the last "Scheduled" appointment
+//     }).sort({ date: -1, time: -1 }); // Sort by the most recent date and time
+
+//     // If there's a last appointment, update its status to "Completed"
+//     if (lastAppointment) {
+//       lastAppointment.status = "Completed";
+//       await lastAppointment.save(); // Save the changes
+//     }
+
+//     // Create a new appointment
+//     const newAppointment = new Appointment({
+//       patientId,
+//       consultant: consultant,
+//       date: appointmentDate, // Use the adjusted appointment date
+//       time,
+//       roomNo,
+//       status: "Scheduled", // Set new appointment status to "Scheduled"
+//     });
+
+//     const savedAppointment = await newAppointment.save();
+
+//     res.status(201).json({
+//       message: "Appointment created successfully, previous appointment completed",
+//       appointment: savedAppointment,
+//       lastAppointment: lastAppointment ? lastAppointment : "No previous appointment found",
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error creating appointment", error });
+//   }
+// };
+
+
+// const addAppointmentAndCompleteLastAppointment = async (req, res) => {
+//   try {
+//     const { patientId, consultant, date, time, roomNo } = req.body;
+
+//     // Find the last appointment for the given patientId with status "Scheduled"
+//     const lastAppointment = await Appointment.findOne({
+//       patientId: patientId,
+//       status: "Scheduled", // We only want to complete the last "Scheduled" appointment
+//     }).sort({ date: -1, time: -1 }); // Sort by the most recent date and time
+
+//     // If there's a last appointment, update its status to "Completed"
+//     if (lastAppointment) {
+//       lastAppointment.status = "Completed";
+//       await lastAppointment.save(); // Save the changes
+//     }
+
+//     // Create a new appointment
+//     const newAppointment = new Appointment({
+//       patientId,
+//       consultant: consultant,
+//       date,
+//       time,
+//       roomNo,
+//       status: "Scheduled", // Set new appointment status to "Scheduled"
+//     });
+
+//     const savedAppointment = await newAppointment.save();
+
+//     res.status(201).json({
+//       message: "Appointment created successfully, previous appointment completed",
+//       appointment: savedAppointment,
+//       lastAppointment: lastAppointment ? lastAppointment : "No previous appointment found",
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error creating appointment", error });
+//   }
+// };
+
+
+const getLastAppointmentByPatientId = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+
+    const lastAppointment = await Appointment.findOne({ patientId })
+      .sort({ date: -1, time: -1 }) // Sort by date and time to get the most recent appointment
+      .populate('consultant patientId patientVitals medicalRecords');
+
+    if (!lastAppointment) {
+      return res.status(404).json({ message: "No appointments found for this patient." });
+    }
+
+    res.status(200).json({ appointment: lastAppointment });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching the last appointment", error });
+  }
+};
+
+const getLastScheduledAppointmentByPatientId = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+
+    const lastScheduledAppointment = await Appointment.findOne({ patientId, status: 'Scheduled' })
+      .sort({ date: -1, time: -1 }) // Sort by date and time to get the most recent scheduled appointment
+      .populate('consultant patientId patientVitals medicalRecords');
+
+    if (!lastScheduledAppointment) {
+      return res.status(404).json({ message: "No scheduled appointments found for this patient." });
+    }
+
+    res.status(200).json({ appointment: lastScheduledAppointment });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching the last scheduled appointment", error });
+  }
+};
+
+const getAppointmentsForTodayWithScheduledStatus = async (req, res) => {
+  try {
+    const today = new Date().setHours(0, 0, 0, 0); // Set the time to midnight for today's date
+
+    const scheduledAppointments = await Appointment.find({
+      date: { $eq: today }, // Find appointments where the date is today
+      status: 'Scheduled',  // Status is Scheduled
+    })
+    .populate('consultant patientId patientVitals medicalRecords');
+
+    if (!scheduledAppointments.length) {
+      return res.status(404).json({ message: "No scheduled appointments found for today." });
+    }
+
+    res.status(200).json({ appointments: scheduledAppointments });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching today's scheduled appointments", error });
+  }
+};
+
+const getPatientsForTodayAppointmentWithScheduledStatus = async (req, res) => {
+  try {
+    const today = new Date().setHours(0, 0, 0, 0); // Set the time to midnight for today's date
+
+    const scheduledAppointments = await Appointment.find({
+      date: { $eq: today }, // Find appointments where the date is today
+      status: 'Scheduled',  // Status is Scheduled
+    })
+    .populate({
+      path: 'patientId', // Populate patientId field to retrieve patient details
+      select: 'name medicalId', // Only select the patient's name and medicalId
+    })
+    .populate('consultant patientVitals medicalRecords'); // Populate other fields as necessary
+
+    if (!scheduledAppointments.length) {
+      return res.status(404).json({ message: "No scheduled appointments found for today." });
+    }
+
+    // Extract patient details from the scheduled appointments
+    const patientsWithScheduledAppointments = scheduledAppointments.map(app => app.patientId);
+
+    res.status(200).json({ patients: patientsWithScheduledAppointments });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching today's scheduled patients", error });
+  }
+};
+
+
 
 module.exports = {
   addAppointment,
@@ -272,4 +509,9 @@ module.exports = {
   getRescheduledAppointmentsForToday,
   getAllScheduledAndRescheduledForToday,
   getPatientLastAppointment,
+  addAppointmentAndCompleteLastAppointment,
+  getLastAppointmentByPatientId,
+  getLastScheduledAppointmentByPatientId,
+  getAppointmentsForTodayWithScheduledStatus,
+  getPatientsForTodayAppointmentWithScheduledStatus,
 };

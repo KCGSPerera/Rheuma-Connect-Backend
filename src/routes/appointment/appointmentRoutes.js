@@ -17,10 +17,15 @@ const {
   getRescheduledAppointmentsForToday,
   getAllScheduledAndRescheduledForToday,
   getPatientLastAppointment,
+  addAppointmentAndCompleteLastAppointment,
+  getLastAppointmentByPatientId,
+  getLastScheduledAppointmentByPatientId,
+  getAppointmentsForTodayWithScheduledStatus,
+  getPatientsForTodayAppointmentWithScheduledStatus,
 } = require("../../controllers/appointment/appointmentCtrl");
 
 // Add new appointment (Doctor creates an appointment for a patient)
-router.post("/add", authMiddleware, roleMiddleware(["doctor"]), addAppointment);
+router.post("/add-appointment", authMiddleware, roleMiddleware(["doctor"]), addAppointment);
 
 // Update appointment status
 router.put("/updateStatus", authMiddleware, roleMiddleware(["doctor"]), updateAppointmentStatus);
@@ -63,6 +68,14 @@ router.get("/today", authMiddleware, getAllScheduledAndRescheduledForToday);
 
 // Get the patient's last appointment
 router.get("/patient/:patientId/last-appointment", authMiddleware, getPatientLastAppointment);
+
+
+//Hansanie
+router.post("/add", authMiddleware, roleMiddleware(["doctor"]), addAppointmentAndCompleteLastAppointment);
+router.get("/get-last/:patientId", authMiddleware, getLastAppointmentByPatientId);
+router.get("/get-last-scheduled/:patientId", authMiddleware, getLastScheduledAppointmentByPatientId);
+router.get("/get-all-today", authMiddleware, getAppointmentsForTodayWithScheduledStatus);
+router.get("/get-all-today/patients", authMiddleware, getPatientsForTodayAppointmentWithScheduledStatus);
 
 
 module.exports = router;

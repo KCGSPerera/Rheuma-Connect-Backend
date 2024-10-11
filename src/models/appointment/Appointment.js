@@ -22,6 +22,18 @@ const appointmentSchema = new mongoose.Schema({
     ref: "Patient",
     required: true,
   },
+  patientVitals: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'PatientVitals',
+    },
+  ],
+  medicalRecords: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'MedicalRecord',
+    },
+  ],
 });
 
 module.exports = mongoose.model("Appointment", appointmentSchema);
